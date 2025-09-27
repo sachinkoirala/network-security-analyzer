@@ -21,6 +21,7 @@ from datetime import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from network_analyzer import NetworkSecurityAnalyzer
+from network_capture import NetworkTrafficCapture, capture_network_sample
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -37,10 +38,17 @@ class NetworkSecurityAPI:
     def __init__(self):
         self.analyzer = NetworkSecurityAnalyzer()
         
-    def run_unified_analysis(self, data_path: str, contamination: float = 0.1, threshold: float = -0.2):
-        """Run unified 2D and 3D analysis"""
+    def run_unified_analysis(self, data_path: str = None, contamination: float = 0.1, threshold: float = -0.2):
+        """Run unified 2D and 3D analysis on real network traffic"""
         try:
             logger.info("Starting unified network security analysis...")
+            
+            # If no data path provided or it's the sample file, capture real network traffic
+            if data_path is None or 'sample_network_data.csv' in data_path:
+                logger.info("Capturing real network traffic...")
+                data_path = capture_network_sample(duration=30)
+                logger.info(f"Network traffic captured and saved to: {data_path}")
+            
             results = self.analyzer.analyze_network(data_path, contamination, threshold)
             logger.info("Analysis completed successfully")
             return results
@@ -97,15 +105,15 @@ def analyze_network():
     global current_analysis, analysis_results
     
     try:
-        data = request.get_json()
-        data_path = data.get('data_path', 'data/sample_network_data.csv')
+        data = request.get_json() or {}
+        data_path = data.get('data_path')  # Will capture real traffic if None
         contamination = data.get('contamination', 0.1)
         threshold = data.get('threshold', -0.2)
         
-        logger.info(f"Starting analysis with data: {data_path}")
+        logger.info("Starting analysis on real network traffic...")
         current_analysis = "running"
         
-        # Run analysis
+        # Run analysis (will capture real network traffic)
         results = api.run_unified_analysis(data_path, contamination, threshold)
         analysis_results = results
         current_analysis = "completed"

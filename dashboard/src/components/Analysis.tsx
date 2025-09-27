@@ -38,7 +38,7 @@ export const AnalysisControls = () => {
         <div className="text-center space-y-6">
           <div className="text-gray-600">
             <p className="text-lg mb-2">Ready to analyze your network security?</p>
-            <p className="text-sm">This will scan your network traffic and detect potential threats using advanced machine learning.</p>
+            <p className="text-sm">This will capture and analyze your live network traffic for 30 seconds to detect potential threats using advanced machine learning.</p>
           </div>
 
           <div className="flex gap-4 justify-center">
@@ -151,11 +151,11 @@ export const AnalysisResults = () => {
             <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full flex items-center justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-yellow-500"></div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">🔄 Processing Your Data...</h3>
-            <p className="text-gray-500 mb-4">This may take a few moments depending on data size</p>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">🔄 Capturing Network Traffic...</h3>
+            <p className="text-gray-500 mb-4">Capturing live network data for 30 seconds, then analyzing for anomalies</p>
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-sm text-yellow-700">
-                ⏳ Please wait while we analyze your network traffic for anomalies
+                ⏳ Please wait while we capture and analyze your live network traffic
               </p>
             </div>
           </div>

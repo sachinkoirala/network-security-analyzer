@@ -36,7 +36,38 @@ cd dashboard
 npm install
 cd ..
 
-# Start the application (dashboard only, API starts on demand)
-echo "🚀 Starting Next.js dashboard..."
-echo "💡 Flask API will start automatically when you run analysis"
-python main.py
+# Start both Flask API and Next.js dashboard
+echo "🚀 Starting Flask API and Next.js dashboard..."
+
+# Start Flask API in background
+echo "🔧 Starting Flask API on port 5000..."
+python main.py --api &
+API_PID=$!
+
+# Wait a moment for API to start
+echo "⏳ Waiting for API to initialize..."
+sleep 5
+
+# Start Next.js dashboard
+echo "🌐 Starting Next.js dashboard on port 3000..."
+python main.py --dashboard &
+DASHBOARD_PID=$!
+
+# Function to handle cleanup on exit
+cleanup() {
+    echo "🛑 Shutting down services..."
+    kill $API_PID 2>/dev/null
+    kill $DASHBOARD_PID 2>/dev/null
+    exit 0
+}
+
+# Set up signal handlers
+trap cleanup SIGINT SIGTERM
+
+echo "✅ Both services are running!"
+echo "🌐 Dashboard: http://localhost:3000"
+echo "🔧 API: http://localhost:5000"
+echo "Press Ctrl+C to stop both services"
+
+# Wait for both processes
+wait
