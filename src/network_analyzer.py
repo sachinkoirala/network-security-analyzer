@@ -240,7 +240,7 @@ class NetworkSecurityAnalyzer:
         self.alert_system = AnomalyAlertSystem()
         
     def analyze_network(self, data_path: str, contamination: float = 0.1, 
-                       threshold: float = -0.2) -> dict:
+                       threshold: float = -0.2, connection_details: list = None) -> dict:
         """Run complete network security analysis."""
         logger.info("Starting network security analysis...")
         
@@ -265,7 +265,12 @@ class NetworkSecurityAnalyzer:
         # Generate report and alerts
         report = self.anomaly_detector.generate_report(predictions, anomaly_scores)
         self.alert_system.threshold = threshold
-        alerts = self.alert_system.generate_alerts(predictions, anomaly_scores, processed_data)
+        
+        # Generate detailed alerts with connection information if available
+        if connection_details and len(connection_details) > 0:
+            alerts = self._generate_detailed_alerts(predictions, anomaly_scores, connection_details)
+        else:
+            alerts = self.alert_system.generate_alerts(predictions, anomaly_scores, processed_data)
         
         # Prepare results
         results = {
@@ -280,7 +285,7 @@ class NetworkSecurityAnalyzer:
             },
             'predictions': [int(x) for x in predictions.tolist()],
             'anomaly_scores': [float(x) for x in anomaly_scores.tolist()],
-            'alerts': alerts.astype(str).to_dict('records') if not alerts.empty else [],
+            'alerts': alerts.to_dict('records') if not alerts.empty else [],
             'feature_importance': {k: {kk: float(vv) for kk, vv in v.items()} 
                                  for k, v in self.data_processor.get_feature_importance(n_components=2).to_dict('index').items()},
             'timestamp': datetime.now().isoformat()
@@ -288,6 +293,39 @@ class NetworkSecurityAnalyzer:
         
         logger.info("Network security analysis completed successfully")
         return results
+    
+    def _generate_detailed_alerts(self, predictions, anomaly_scores, connection_details):
+        """Generate detailed alerts with connection information."""
+        import pandas as pd
+        
+        # Find anomaly indices
+        anomaly_indices = [i for i, pred in enumerate(predictions) if pred == -1]
+        
+        if not anomaly_indices:
+            return pd.DataFrame()
+        
+        # Create detailed alerts
+        detailed_alerts = []
+        for idx in anomaly_indices:
+            if idx < len(connection_details):
+                conn = connection_details[idx]
+                alert = {
+                    'anomaly_score': float(anomaly_scores[idx]),
+                    'severity': 'High' if anomaly_scores[idx] < -0.5 else 'Medium',
+                    'destination_port': int(conn.get('remote_port', 0)),
+                    'flow_duration': float(conn.get('flow_duration', 0)),
+                    'fwd_packets': int(conn.get('fwd_packets', 0)),
+                    'back_packets': int(conn.get('back_packets', 0)),
+                    'flow_bytes_s': float(conn.get('flow_bytes_s', 0)),
+                    'protocol': conn.get('protocol', 'Unknown'),
+                    'local_ip': conn.get('local_ip', 'Unknown'),
+                    'remote_ip': conn.get('remote_ip', 'Unknown'),
+                    'status': conn.get('status', 'Unknown'),
+                    'timestamp': conn.get('timestamp', 'Unknown')
+                }
+                detailed_alerts.append(alert)
+        
+        return pd.DataFrame(detailed_alerts)
 
 
 def main():

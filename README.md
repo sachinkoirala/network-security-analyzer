@@ -35,6 +35,11 @@ A comprehensive network security analysis platform that combines machine learnin
 - **Node.js 18+** with npm
 - **Git** for cloning the repository
 
+**Windows Users:**
+- **PowerShell 5.1+** or **Command Prompt**
+- **Windows 10/11** (recommended)
+- **Administrator privileges** (for network monitoring)
+
 ### Installation
 
 1. **Clone the repository**
@@ -44,39 +49,114 @@ A comprehensive network security analysis platform that combines machine learnin
    ```
 
 2. **Run the setup script**
+
+   **Linux/macOS:**
    ```bash
    chmod +x setup.sh
    ./setup.sh
    ```
 
+   **Windows:**
+   Follow the manual setup instructions below.
+
 3. **Start the application**
+
+   **Linux/macOS:**
    ```bash
    ./start.sh
    ```
+
+   **Windows:**
+   Follow the manual start instructions below.
 
 4. **Open your browser**
    Navigate to `http://localhost:3000`
 
 ## 📖 Detailed Setup
 
-### Manual Installation
+### Windows Setup (Manual)
+
+**Step 1: Open Command Prompt as Administrator**
+- Press `Win + R`, type `cmd`, press `Ctrl + Shift + Enter`
+- Or search "Command Prompt" → Right-click → "Run as administrator"
+
+**Note:** You can also use PowerShell if you prefer. The commands are the same.
+
+**Step 2: Navigate to project directory**
+```cmd
+cd C:\path\to\your\project\network-security-analyzer
+```
+
+**Step 3: Create Python virtual environment**
+```cmd
+python -m venv venv
+venv\Scripts\activate
+```
+
+**Step 4: Install Python dependencies**
+```cmd
+pip install -r requirements.txt
+pip install -r api\requirements.txt
+```
+
+**Step 5: Install Node.js dependencies**
+```cmd
+cd dashboard
+npm install
+cd ..
+```
+
+**Step 6: Start the application**
+```cmd
+REM Option 1: Start both services
+python main.py --both
+
+REM Option 2: Start separately (in different Command Prompt windows)
+REM Window 1:
+python main.py --api
+REM Window 2:
+python main.py --dashboard
+```
+
+### Manual Installation (Linux/macOS)
 
 #### 1. Python Environment Setup
 
+**Linux/macOS:**
 ```bash
 # Create virtual environment
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
 
 # Install Python dependencies
 pip install -r requirements.txt
 pip install -r api/requirements.txt
 ```
 
+**Windows:**
+```cmd
+REM Create virtual environment
+python -m venv venv
+venv\Scripts\activate
+
+REM Install Python dependencies
+pip install -r requirements.txt
+pip install -r api\requirements.txt
+```
+
 #### 2. Node.js Setup
 
+**Linux/macOS:**
 ```bash
 # Install Node.js dependencies
+cd dashboard
+npm install
+cd ..
+```
+
+**Windows:**
+```cmd
+REM Install Node.js dependencies
 cd dashboard
 npm install
 cd ..
@@ -85,16 +165,34 @@ cd ..
 #### 3. Start Services
 
 **Option A: Start both services**
+
+**Linux/macOS:**
 ```bash
 python main.py --both
 ```
 
+**Windows:**
+```cmd
+python main.py --both
+```
+
 **Option B: Start services separately**
+
+**Linux/macOS:**
 ```bash
 # Terminal 1: Start Flask API
 python main.py --api
 
 # Terminal 2: Start Dashboard
+python main.py --dashboard
+```
+
+**Windows:**
+```cmd
+REM Command Prompt 1: Start Flask API
+python main.py --api
+
+REM Command Prompt 2: Start Dashboard
 python main.py --dashboard
 ```
 
@@ -250,12 +348,26 @@ curl -X POST -H "Content-Type: application/json" \
 **4. Port conflicts**
 - Solution: Check if ports 3000 or 5000 are already in use and kill those processes
 
+**5. Windows-specific issues**
+- **"python is not recognized"**: Add Python to PATH or use `py` instead of `python`
+- **"node is not recognized"**: Add Node.js to PATH or reinstall Node.js
+- **Permission denied**: Run Command Prompt as Administrator
+- **Virtual environment issues**: Use `python -m venv venv` instead of `python3 -m venv venv`
+
 ### Debug Mode
 
 Enable debug logging by setting environment variables:
+
+**Linux/macOS:**
 ```bash
 export FLASK_DEBUG=1
 export NEXT_DEBUG=1
+```
+
+**Windows:**
+```cmd
+set FLASK_DEBUG=1
+set NEXT_DEBUG=1
 ```
 
 ## 📊 Performance
@@ -295,4 +407,4 @@ If you encounter any issues or have questions:
 
 ---
 
-**Made with ❤️ for network security professionals**
+**Made with ❤️ for All**

@@ -5,13 +5,18 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Shield, Activity } from 'lucide-react';
 
 interface CriticalAnomaly {
-  'Destination Port': number;
-  'Flow Duration': number;
-  'Total Fwd Packets': number;
-  'Total Backward Packets': number;
-  'Flow Bytes/s': number;
+  destination_port: number;
+  flow_duration: number;
+  fwd_packets: number;
+  back_packets: number;
+  flow_bytes_s: number;
   anomaly_score: number;
-  prediction: number;
+  severity: string;
+  protocol: string;
+  local_ip: string;
+  remote_ip: string;
+  status: string;
+  timestamp: string;
 }
 
 interface CriticalAnomaliesTableProps {
@@ -40,18 +45,17 @@ export const CriticalAnomaliesTable = ({ anomalies }: CriticalAnomaliesTableProp
     );
   }
 
-  const getSeverityColor = (score: any) => {
-    if (typeof score !== 'number') return 'bg-gray-100 text-gray-800 border-gray-200';
-    if (score < -0.5) return 'bg-red-100 text-red-800 border-red-200';
-    if (score < -0.3) return 'bg-orange-100 text-orange-800 border-orange-200';
-    return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+  const getSeverityColor = (severity: string) => {
+    switch (severity?.toLowerCase()) {
+      case 'high': return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'low': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
-  const getSeverityLabel = (score: any) => {
-    if (typeof score !== 'number') return 'Unknown';
-    if (score < -0.5) return 'Critical';
-    if (score < -0.3) return 'High';
-    return 'Medium';
+  const getSeverityLabel = (severity: string) => {
+    return severity || 'Unknown';
   };
 
   return (
@@ -79,6 +83,8 @@ export const CriticalAnomaliesTable = ({ anomalies }: CriticalAnomaliesTableProp
                 <th className="text-left p-3 font-semibold text-gray-700">Fwd Packets</th>
                 <th className="text-left p-3 font-semibold text-gray-700">Back Packets</th>
                 <th className="text-left p-3 font-semibold text-gray-700">Flow Bytes/s</th>
+                <th className="text-left p-3 font-semibold text-gray-700">Protocol</th>
+                <th className="text-left p-3 font-semibold text-gray-700">Remote IP</th>
                 <th className="text-left p-3 font-semibold text-gray-700">Anomaly Score</th>
               </tr>
             </thead>
@@ -87,25 +93,33 @@ export const CriticalAnomaliesTable = ({ anomalies }: CriticalAnomaliesTableProp
                 <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="p-3">
                     <Badge 
-                      className={`${getSeverityColor(anomaly.anomaly_score)} border`}
+                      className={`${getSeverityColor(anomaly.severity)} border`}
                     >
-                      {getSeverityLabel(anomaly.anomaly_score)}
+                      {getSeverityLabel(anomaly.severity)}
                     </Badge>
                   </td>
                   <td className="p-3 font-mono text-sm text-gray-800">
-                    {anomaly['Destination Port'] || 'N/A'}
+                    {anomaly.destination_port || 'N/A'}
                   </td>
                   <td className="p-3 text-sm text-gray-800">
-                    {typeof anomaly['Flow Duration'] === 'number' ? anomaly['Flow Duration'].toLocaleString() + 'ms' : 'N/A'}
+                    {typeof anomaly.flow_duration === 'number' ? anomaly.flow_duration.toFixed(2) + 's' : 'N/A'}
                   </td>
                   <td className="p-3 text-sm text-gray-800">
-                    {typeof anomaly['Total Fwd Packets'] === 'number' ? anomaly['Total Fwd Packets'].toLocaleString() : 'N/A'}
+                    {typeof anomaly.fwd_packets === 'number' ? anomaly.fwd_packets.toLocaleString() : 'N/A'}
                   </td>
                   <td className="p-3 text-sm text-gray-800">
-                    {typeof anomaly['Total Backward Packets'] === 'number' ? anomaly['Total Backward Packets'].toLocaleString() : 'N/A'}
+                    {typeof anomaly.back_packets === 'number' ? anomaly.back_packets.toLocaleString() : 'N/A'}
                   </td>
                   <td className="p-3 text-sm text-gray-800">
-                    {typeof anomaly['Flow Bytes/s'] === 'number' ? anomaly['Flow Bytes/s'].toLocaleString() : 'N/A'}
+                    {typeof anomaly.flow_bytes_s === 'number' ? anomaly.flow_bytes_s.toLocaleString() : 'N/A'}
+                  </td>
+                  <td className="p-3 text-sm text-gray-800">
+                    <Badge variant="outline" className="text-blue-600">
+                      {anomaly.protocol || 'Unknown'}
+                    </Badge>
+                  </td>
+                  <td className="p-3 font-mono text-sm text-gray-800">
+                    {anomaly.remote_ip || 'N/A'}
                   </td>
                   <td className="p-3 font-mono text-sm">
                     <span className={`px-2 py-1 rounded ${

@@ -29,26 +29,26 @@ export const NetworkSecurityDashboard = () => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-white shadow-lg rounded-lg p-1">
-          <TabsTrigger
-            value="analysis"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold text-gray-700"
-          >
-            🔍 Analysis
-          </TabsTrigger>
-          <TabsTrigger
-            value="monitor"
-            className="data-[state=active]:bg-green-600 data-[state=active]:text-white font-semibold text-gray-700"
-          >
-            📊 Network Monitor
-          </TabsTrigger>
-          <TabsTrigger
-            value="visualizations"
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold text-gray-700"
-          >
-            📈 Visualizations
-          </TabsTrigger>
-        </TabsList>
+              <TabsList className="grid w-full grid-cols-3 bg-white shadow-lg rounded-lg p-1">
+                <TabsTrigger
+                  value="analysis"
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold text-gray-700"
+                >
+                  🔍 Analysis
+                </TabsTrigger>
+                <TabsTrigger
+                  value="visualizations"
+                  className="data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold text-gray-700"
+                >
+                  📈 Visualizations
+                </TabsTrigger>
+                <TabsTrigger
+                  value="monitor"
+                  className="data-[state=active]:bg-green-600 data-[state=active]:text-white font-semibold text-gray-700"
+                >
+                  📊 Network Monitor
+                </TabsTrigger>
+              </TabsList>
 
         <TabsContent value="analysis" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -59,12 +59,6 @@ export const NetworkSecurityDashboard = () => {
               <AnalysisResults />
             </ErrorBoundary>
           </div>
-        </TabsContent>
-
-        <TabsContent value="monitor" className="space-y-6">
-          <ErrorBoundary>
-            <NetworkMonitor networkInfo={networkInfo} />
-          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="visualizations" className="space-y-6">
@@ -81,6 +75,12 @@ export const NetworkSecurityDashboard = () => {
                 </p>
               </div>
             )}
+          </ErrorBoundary>
+        </TabsContent>
+
+        <TabsContent value="monitor" className="space-y-6">
+          <ErrorBoundary>
+            <NetworkMonitor networkInfo={networkInfo} />
           </ErrorBoundary>
         </TabsContent>
       </Tabs>

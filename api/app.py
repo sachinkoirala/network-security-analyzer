@@ -43,13 +43,27 @@ class NetworkSecurityAPI:
         try:
             logger.info("Starting unified network security analysis...")
             
+            connection_details = None
+            
             # If no data path provided or it's the sample file, capture real network traffic
             if data_path is None or 'sample_network_data.csv' in data_path:
                 logger.info("Capturing real network traffic...")
-                data_path = capture_network_sample(duration=30)
+                capturer = NetworkTrafficCapture()  # Use random duration
+                capturer.capture_traffic()
+                connection_details = capturer.get_connection_details()
+                
+                # Save the captured data with timestamp
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                data_path = capturer.save_to_csv(f"data/live_network_data_{timestamp}.csv")
                 logger.info(f"Network traffic captured and saved to: {data_path}")
             
-            results = self.analyzer.analyze_network(data_path, contamination, threshold)
+            results = self.analyzer.analyze_network(data_path, contamination, threshold, connection_details)
+            
+            # Add connection details to results for critical anomalies
+            if connection_details:
+                results['connection_details'] = connection_details
+                logger.info(f"Added {len(connection_details)} connection details to results")
+            
             logger.info("Analysis completed successfully")
             return results
         except Exception as e:
